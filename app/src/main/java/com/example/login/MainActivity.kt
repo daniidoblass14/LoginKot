@@ -24,8 +24,9 @@ class MainActivity : AppCompatActivity() {
 
         btnRegistrar.setOnClickListener {
 
-
+            startActivity(intentRegistrar)
         }
+
 
     }
 }
