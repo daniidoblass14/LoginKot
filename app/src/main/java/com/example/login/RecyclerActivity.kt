@@ -4,7 +4,8 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,10 +20,13 @@ class RecyclerActivity : AppCompatActivity() {
         setContentView(R.layout.recy_layout)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView!!.setLayoutManager(LinearLayoutManager(this))
+
         val listaPersonas: List<MyData> =
             obtenerPersonasDeLaBaseDeDatos() // aquí debes implementar tu propia lógica para obtener los datos de la base de datos
         val adapter = MyAdapter(listaPersonas)
+
         recyclerView!!.setAdapter(adapter)
+
         adapter.setOnClick(object : MyAdapter.onItemClick {
             override fun onItemClick(data: MyData?) {
                 if (data != null) {
@@ -89,4 +93,6 @@ class RecyclerActivity : AppCompatActivity() {
     private fun salir() {
         super.onBackPressed()
     }
+
+
 }

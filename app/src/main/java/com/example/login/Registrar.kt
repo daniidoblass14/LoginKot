@@ -1,12 +1,10 @@
 package com.example.login
-
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.net.Uri
@@ -14,6 +12,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -23,9 +23,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.example.login.ActivitySQLiteHelper
-import com.example.login.R
-import com.example.login.RecyclerActivity
+import com.androidadvance.topsnackbar.TSnackbar
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -46,7 +45,6 @@ class Registrar : AppCompatActivity(), View.OnClickListener {
 
     private var nombre_recuperado: String? = null
     private var fecha_recuperado: String? = null
-    private var imagen_recuperada: Bitmap? = null
     private var mediaPlayer: MediaPlayer? = null
 
     private var textNombre: TextInputLayout? = null
@@ -60,6 +58,7 @@ class Registrar : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_layout)
+
         mediaPlayer = MediaPlayer.create(applicationContext, R.raw.song)
         btnCamara = findViewById<View>(R.id.btnCamara) as Button
         btnGaleria = findViewById<View>(R.id.btnGaleria) as Button
@@ -354,5 +353,66 @@ class Registrar : AppCompatActivity(), View.OnClickListener {
         private const val REQUEST_PICK_IMAGE = 2
         private const val REQUEST_PERMISSION_CAMERA = 1001
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.custommenu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.config -> {
+
+                val bottomSheet = BottomSheetDialog(this)
+                val view = layoutInflater.inflate(R.layout.botton_sheet_menu, null)
+                bottomSheet.setContentView(view)
+                bottomSheet.show()
+
+                view.findViewById<Button>(R.id.btnDelete).setOnClickListener{
+
+                    if (this@Registrar.intent.hasExtra("nombre")){
+
+                        val nombre: String = this@Registrar.intent.getStringExtra("nombre") ?: ""
+
+
+                        //Abrimos la base de datos, de forma escritura.
+                        val acdbh = ActivitySQLiteHelper(this@Registrar, "users", null, 1)
+                        val db: SQLiteDatabase = acdbh.getWritableDatabase()
+                        try {
+                            db.execSQL("DELETE FROM users WHERE user ='$nombre'")
+                            val refresh = Intent(this@Registrar, RecyclerActivity::class.java)
+                            startActivity(refresh)
+                        } catch (e: Exception) {
+                            TSnackbar.make(findViewById(android.R.id.content),"Error al eliminar el usuario",
+                                TSnackbar.LENGTH_LONG).show();
+                        }
+                        acdbh.close()
+                        db.close()
+                        finish()
+                    }
+
+                    else {
+
+                        val builder = AlertDialog.Builder(this@Registrar)
+                        builder.setTitle("ERROR")
+                        builder.setMessage(
+                            """
+                        No se puede borrar nada
+                    """.trimIndent()
+                        )
+                        builder.setPositiveButton("Aceptar", null)
+                        val dialog = builder.create()
+                        dialog.show()
+
+                    }
+
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
 }
 

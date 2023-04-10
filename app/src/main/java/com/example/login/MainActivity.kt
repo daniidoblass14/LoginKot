@@ -7,9 +7,11 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -20,7 +22,10 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
+
 class MainActivity : AppCompatActivity() {
+
+    private var menu: MenuItem? = null
     private var btnRegistrar: Button? = null
     private var btnIniciar: Button? = null
     private var textNombre: TextInputLayout? = null
@@ -28,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private var nombreEditText: TextInputEditText? = null
     private var passwordEditText: TextInputEditText? = null
     private val pendingIntent: PendingIntent? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -59,16 +65,48 @@ class MainActivity : AppCompatActivity() {
             }
             false
         })
-        btnRegistrar!!.setOnClickListener { startActivity(intentRegistrar) }
+        btnRegistrar!!.setOnClickListener {
+            startActivity(intentRegistrar)
+        }
+
         btnIniciar!!.setOnClickListener {
             if (nombreEditText!!.text.toString() == "" && passwordEditText!!.text.toString() == "") {
                 btnIniciar!!.isEnabled = true
             } else {
                 val nombre = nombreEditText!!.text.toString()
                 val password = passwordEditText!!.text.toString()
-                iniciarSesion(nombre, password)
+                //iniciarSesion(nombre, password)
+                iniciarSesionUrl(nombre,password)
+                MyTask().execute(nombre, password)
             }
         }
+    }
+
+    private fun iniciarSesionUrl (nombre: String, password: String) {
+
+
+
+    }
+
+    private class MyTask : AsyncTask<String?, Int?, LoginResponse>() {
+        // Runs in UI before background thread is called
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+        }
+
+        override fun doInBackground(vararg p0: String?): LoginResponse {
+            TODO("Not yet implemented")
+        }
+
+        // This runs in UI when background thread finishes
+        override fun onPostExecute(result: LoginResponse) {
+            super.onPostExecute(result)
+
+            // Do things like hide the progress bar or change a TextView
+        }
+
     }
 
     private fun iniciarSesion(nombre: String, password: String) {
@@ -124,3 +162,4 @@ class MainActivity : AppCompatActivity() {
         private const val NOTIFICACION_ID = 0
     }
 }
+

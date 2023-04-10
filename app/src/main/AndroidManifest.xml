@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".RecyclerActivity" />
-        <activity android:name=".Registrar" />
+        <activity android:name=".Registrar"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
